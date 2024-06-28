@@ -1,0 +1,32 @@
+name: Sync with Gitee
+
+on:
+ 
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  giteepush:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure Private Key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.GITEE_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+
+      - name: Sync with Gitee
+        env:
+          SOURCE_REPO: 'https://boringssl.googlesource.com/boringssl.git'
+          DESTINATION_REPO: 'git@gitee.com:fenghuolingyun/boringssl.git'
+        run: |
+          git clone --mirror "$SOURCE_REPO" && cd `basename "$SOURCE_REPO"`
+          git remote set-url --push origin "$DESTINATION_REPO"
+          git fetch -p origin
+          git for-each-ref --format 'delete %(refname)' refs/pull | git update-ref --stdin
+          git push --mirror		  
