@@ -2,7 +2,7 @@ name: Sync with Gitee
 
 on:
   schedule:
-    - cron: '0 0 * * *' # 每天午夜（UTC时间）运行
+    - cron: '0 4 * * *' # 每天午夜4点（UTC时间）运行
 jobs:
   giteepush:
     runs-on: ubuntu-latest
@@ -26,7 +26,8 @@ jobs:
           git remote set-url --push origin "$DESTINATION_REPO"
           git fetch -p origin
           git for-each-ref --format 'delete %(refname)' refs/pull | git update-ref --stdin
-          git push --mirror		  
+          git push --mirror	
+          
   githubpush:
     runs-on: ubuntu-latest
     steps:
