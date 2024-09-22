@@ -40,7 +40,7 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
 
-      - name: Sync with Gitee
+      - name: Sync with Github
         env:
           SOURCE_REPO: 'git://git.proxmox.com/git/pmg-gui.git'
           DESTINATION_REPO: 'git@github.com:wy414012/pmg-gui.git'
