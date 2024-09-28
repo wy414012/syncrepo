@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '0 4 * * *' # 每天午夜4点（UTC时间）运行
 jobs:
-  giteepush:
+  boringssl:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4 
@@ -28,7 +28,7 @@ jobs:
           git for-each-ref --format 'delete %(refname)' refs/pull | git update-ref --stdin
           git push --mirror	
           
-  githubpush:
+  pmg-gui:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4 
@@ -50,4 +50,52 @@ jobs:
           git remote set-url --push origin "$DESTINATION_REPO"
           git fetch -p origin
           git for-each-ref --format 'delete %(refname)' refs/pull | git update-ref --stdin
-          git push --mirror		  
+          git push --mirror	
+          
+  audk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 
+      - name: Configure Private Key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.GITEE_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+
+      - name: Sync with Github
+        env:
+          SOURCE_REPO: 'https://github.com/acidanthera/audk.git'
+          DESTINATION_REPO: 'git@github.com:wy414012/audk.git'
+        run: |
+          git clone --mirror "$SOURCE_REPO" && cd `basename "$SOURCE_REPO"`
+          git remote set-url --push origin "$DESTINATION_REPO"
+          git fetch -p origin
+          git for-each-ref --format 'delete %(refname)' refs/pull | git update-ref --stdin
+          git push --mirror	
+          
+  MacKernelSDK:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 
+      - name: Configure Private Key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.GITEE_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+
+      - name: Sync with Github
+        env:
+          SOURCE_REPO: 'https://github.com/acidanthera/MacKernelSDK.git'
+          DESTINATION_REPO: 'git@github.com:wy414012/MacKernelSDK.git'
+        run: |
+          git clone --mirror "$SOURCE_REPO" && cd `basename "$SOURCE_REPO"`
+          git remote set-url --push origin "$DESTINATION_REPO"
+          git fetch -p origin
+          git for-each-ref --format 'delete %(refname)' refs/pull | git update-ref --stdin
+          git push --mirror		
