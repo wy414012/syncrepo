@@ -1,8 +1,10 @@
 name: Sync with Gitee
-
 on:
-  schedule:
-    - cron: '30 12 * * *' # 每天午夜4点（UTC时间）运行
+  push:
+  pull_request:
+  workflow_dispatch:
+  release:
+    types: [published]
 jobs:
   boringssl:
     runs-on: ubuntu-latest
