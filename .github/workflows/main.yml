@@ -1,10 +1,7 @@
 name: Sync with Gitee
 on:
-  push:
-  pull_request:
-  workflow_dispatch:
-  release:
-    types: [published]
+  schedule:
+    - cron: '0 0 * * *' # 每天午夜0点（UTC时间）运行
 jobs:
   boringssl:
     runs-on: ubuntu-latest
@@ -95,78 +92,6 @@ jobs:
         env:
           SOURCE_REPO: 'https://github.com/acidanthera/MacKernelSDK.git'
           DESTINATION_REPO: 'git@github.com:wy414012/MacKernelSDK.git'
-        run: |
-          git clone --mirror "$SOURCE_REPO" && cd `basename "$SOURCE_REPO"`
-          git remote set-url --push origin "$DESTINATION_REPO"
-          git fetch -p origin
-          git for-each-ref --format 'delete %(refname)' refs/pull | git update-ref --stdin
-          git push --mirror		
-
-  pve-kernel:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4 
-      - name: Configure Private Key
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.GITEE_PRIVATE_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          echo "StrictHostKeyChecking no" >> ~/.ssh/config
-
-      - name: Sync with Github
-        env:
-          SOURCE_REPO: 'git://git.proxmox.com/git/pve-kernel.git'
-          DESTINATION_REPO: 'git@github.com:wy414012/pve-kernel.git'
-        run: |
-          git clone --mirror "$SOURCE_REPO" && cd `basename "$SOURCE_REPO"`
-          git remote set-url --push origin "$DESTINATION_REPO"
-          git fetch -p origin
-          git for-each-ref --format 'delete %(refname)' refs/pull | git update-ref --stdin
-          git push --mirror	
-
-  mirror_ubuntu-kernels:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4 
-      - name: Configure Private Key
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.GITEE_PRIVATE_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          echo "StrictHostKeyChecking no" >> ~/.ssh/config
-
-      - name: Sync with Github
-        env:
-          SOURCE_REPO: 'git://git.proxmox.com/git/mirror_ubuntu-kernels.git'
-          DESTINATION_REPO: 'git@github.com:wy414012/mirror_ubuntu-kernels.git'
-        run: |
-          git clone --mirror "$SOURCE_REPO" && cd `basename "$SOURCE_REPO"`
-          git remote set-url --push origin "$DESTINATION_REPO"
-          git fetch -p origin
-          git for-each-ref --format 'delete %(refname)' refs/pull | git update-ref --stdin
-          git push --mirror		
-
-  zfsonlinux:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4 
-      - name: Configure Private Key
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.GITEE_PRIVATE_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          echo "StrictHostKeyChecking no" >> ~/.ssh/config
-
-      - name: Sync with Github
-        env:
-          SOURCE_REPO: 'git://git.proxmox.com/git/zfsonlinux.git'
-          DESTINATION_REPO: 'git@github.com:wy414012/zfsonlinux.git'
         run: |
           git clone --mirror "$SOURCE_REPO" && cd `basename "$SOURCE_REPO"`
           git remote set-url --push origin "$DESTINATION_REPO"
