@@ -2,7 +2,7 @@ name: Sync with Gitee
 
 on:
   schedule:
-    - cron: '0 4 * * *' # 每天午夜4点（UTC时间）运行
+    - cron: '0 13 * * *' # 每天午夜4点（UTC时间）运行
 jobs:
   boringssl:
     runs-on: ubuntu-latest
