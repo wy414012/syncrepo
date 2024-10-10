@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    env:
+      JOB_TYPE: BUILD
+    steps:
+      - uses: actions/checkout@v4
+      - name: update sources.list
+        run:  sudo apt update
+
+      - name: install tools
+        run: sudo apt-get -y install devscripts equivs
+    
+      - name: install deps    
+        run: yes| sudo mk-build-deps --install
+        
+      - name: remove deps
+        run: yes| sudo mk-build-deps --install --remove
+      - name: clone pve-kernel
+      - run: |
+          git clone git://git.proxmox.com/git/pve-kernel.git && cd pve-kernel
+          yes| sudo mk-build-deps --install
+      
+      - name: make deb
+        run: make deb
+        
