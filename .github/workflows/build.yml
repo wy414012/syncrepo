@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: Linux
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - name: update sources.list
@@ -19,8 +19,7 @@ jobs:
       run: sudo apt-get -y install devscripts equivs
       
     - name: clone pve-kernel
-    - run: |
-          git clone git://git.proxmox.com/git/pve-kernel.git && cd pve-kernel
+      run: git clone git://git.proxmox.com/git/pve-kernel.git && cd pve-kernel
           
     - name: install deps    
       run: yes| sudo mk-build-deps --install
