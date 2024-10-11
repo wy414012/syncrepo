@@ -1,0 +1,32 @@
+name: Sync with Gitlab
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  boringssl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 
+      - name: Configure Private Key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.GITEE_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+
+      - name: Sync with Gitlab
+        env:
+          SOURCE_REPO: 'git://git.proxmox.com/git/mirror_ubuntu-kernels.git'
+          DESTINATION_REPO: 'git@gitlab.v6.pub:fd210012/mirror_ubuntu-kernels.git'
+        run: |
+          git clone --mirror "$SOURCE_REPO" && cd `basename "$SOURCE_REPO"`
+          git remote set-url --push origin "$DESTINATION_REPO"
+          git fetch -p origin
+          git for-each-ref --format 'delete %(refname)' refs/pull | git update-ref --stdin
+          git push --mirror	
